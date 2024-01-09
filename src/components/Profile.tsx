@@ -1,6 +1,5 @@
 "use client";
 import colors from "@/constant/colors";
-import { useRouter } from "next/router";
 import React from "react";
 
 interface Props {

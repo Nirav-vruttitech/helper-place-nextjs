@@ -1,6 +1,6 @@
 "use client";
 import resume_type, { ResumeType } from "@/data/PostManager";
-import { ResumeDetail } from "@/types/dataTypes";
+
 import {
   ContractStatus,
   JobLocation,
@@ -13,10 +13,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import Select, { components } from "react-select";
-import { RxCross2 } from "react-icons/rx";
 import { BiReset } from "react-icons/bi";
-import { get } from "http";
-import path from "path";
 
 interface PropsType {
   masterData: MasterDataJsonType;
@@ -229,7 +226,7 @@ const FilterSection: React.FC<PropsType> = ({ masterData }) => {
                           onClick={(e: any) => {
                             router.push(
                               `${pathname}?${
-                                !getQueryString("job_position")
+                                getQueryString("job_position") !== e.target.value
                                   ? createQueryString("job_position", e.target.value)
                                   : ""
                               }`
@@ -274,7 +271,7 @@ const FilterSection: React.FC<PropsType> = ({ masterData }) => {
                           name={"job_type"}
                           value={jobType.job_type_name}
                           onClick={(e: any) => {
-                            !getQueryString("job_type")
+                            getQueryString("job_type") !== e.target.value
                               ? router.push(
                                   `${pathname}?${createQueryString("job_type", e.target.value)}`
                                 )
@@ -346,7 +343,7 @@ const FilterSection: React.FC<PropsType> = ({ masterData }) => {
                           name={"resume_type"}
                           value={data.resume_type_name}
                           onClick={(e: any) => {
-                            !getQueryString("post_manager")
+                            getQueryString("post_manager") !== e.target.value
                               ? router.push(
                                   `${pathname}?${createQueryString("post_manager", e.target.value)}`
                                 )

@@ -1,5 +1,6 @@
+"use client";
 import HeaderBanner from "@/components/HeaderBanner";
-import React from "react";
+import React, { use, useEffect, useState } from "react";
 
 import OrderByAndFilter from "@/components/OrderByAndFilter";
 import FilterSection from "@/components/FilterSection";
@@ -12,23 +13,47 @@ import { MasterDataInstance } from "@/utils/MasterDataInstance";
 import { FindJobType } from "@/types/dataTypes";
 import findJobService from "@/services/findJobService";
 
-const FindJob = async ({ searchParams }: any) => {
+const FindJob = ({ searchParams }: any) => {
   const lang = "en";
-  const helpContent: HelpContentType = await GetHelpContent(lang, "Job", 0);
-  const masterData: MasterDataJsonType = await masterDataJsonService(lang);
+  const [helpContent, setHelpContent] = useState<HelpContentType>();
+  const [masterData, setMasterData] = useState<MasterDataJsonType>();
+  const [findJobData, setFindJobData] = useState<FindJobType[]>();
   const masterDataInstance = new MasterDataInstance(masterData);
   const query = masterDataInstance.getQuery(searchParams);
-  const data: any = await findJobService(query, lang);
-  const findJobData: FindJobType[] = data?.data;
+
+  useEffect(() => {
+    (async () => {
+      let res = await GetHelpContent(lang, "Job", 0);
+      if (res) setHelpContent(res);
+    })();
+
+    (async () => {
+      let res = await masterDataJsonService(lang);
+      if (res) setMasterData(res);
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const data: any = await findJobService(query, lang);
+      const findJobData: FindJobType[] = data?.data;
+      setFindJobData(findJobData);
+    })();
+  }, [query]);
 
   return (
     <div>
-      <HeaderBanner description={helpContent.header_description} title={helpContent.header_title} />
+      {helpContent && (
+        <HeaderBanner
+          description={helpContent.header_description}
+          title={helpContent.header_title}
+        />
+      )}
       <OrderByAndFilter />
       <div className="flex gap-x-10">
-        <FilterSection masterData={masterData} />
+        {masterData && <FilterSection masterData={masterData} />}
 
-        {findJobData.length > 0 && (
+        {findJobData && findJobData.length > 0 && (
           <div className="flex flex-col w-10/12">
             {findJobData.map((data: FindJobType, i) => (
               <CandidateCart
